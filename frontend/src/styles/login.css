@@ -1,0 +1,52 @@
+/* Modern login page styles */
+.login-container {
+  max-width: 400px;
+  margin: 80px auto;
+  padding: 32px 24px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+.login-container h2 {
+  margin-bottom: 24px;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #222;
+}
+.login-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.login-container input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+.login-container button {
+  padding: 10px;
+  background: #0070f3;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.login-container button:hover {
+  background: #005bb5;
+}
+.login-container p {
+  margin-top: 16px;
+  font-size: 0.95rem;
+}
+.login-container a {
+  color: #0070f3;
+  text-decoration: underline;
+}
+.login-container .error {
+  color: #d32f2f;
+  margin-top: 8px;
+}
