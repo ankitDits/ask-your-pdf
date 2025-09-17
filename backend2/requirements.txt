@@ -1,0 +1,8 @@
+# Basic requirements for FastAPI backend
+fastapi
+uvicorn
+python-multipart
+PyPDF2
+langchain
+sentence-transformers
+chromadb

@@ -6,7 +6,8 @@ import os
 from PyPDF2 import PdfReader
 from models import init_db, get_db
 from llm import LocalLLM
-from cors_middleware import add_cors
+from cors_middleware import add_cors # type: ignore
+from vector_db import add_pdf_chunks, query_pdf_chunks
 
 app = FastAPI()
 add_cors(app)
@@ -38,7 +39,7 @@ def read_root():
     return {"message": "PDF Chatbot Backend is running."}
 
 @app.post("/upload_pdf")
-def upload_pdf(user_id: int = Form(...), file: UploadFile = File(...)):
+def upload_pdf(user_id: int = Form(...), file: UploadFile = File(...)): # type: ignore
     if not file.filename or not file.filename.endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are allowed.")
     file_path = os.path.join(UPLOAD_DIR, file.filename)
@@ -57,7 +58,9 @@ def upload_pdf(user_id: int = Form(...), file: UploadFile = File(...)):
     conn.commit()
     pdf_id = cursor.lastrowid
     conn.close()
-    return {"pdf_id": pdf_id, "filename": file.filename, "text_preview": text[:200]}
+    # Add PDF chunks to Chroma vector DB
+    add_pdf_chunks(pdf_id, text) # type: ignore
+    return {"pdf_id": pdf_id, "filename": file.filename, "text_preview": text[:200]} # type: ignore
 
 @app.post("/register")
 def register(user: UserCreate):
@@ -98,23 +101,41 @@ def list_pdfs(user_id: int):
 @app.post("/chat")
 def chat(request: ChatRequest):
     user_id = request.user_id
+    pdf_id = request.pdf_id
     conn = get_db()
     cursor = conn.cursor()
-    cursor.execute("SELECT extracted_text FROM pdfs WHERE id=? AND user_id=?", (request.pdf_id, user_id))
+    cursor.execute("SELECT id FROM pdfs WHERE id=? AND user_id=?", (pdf_id, user_id))
     row = cursor.fetchone()
     if not row:
         conn.close()
         raise HTTPException(status_code=404, detail="PDF not found.")
-    pdf_text = row["extracted_text"]
-    # Limit to first 3 pages (split by '\n\n' which is page separator from PyPDF2)
-    pages = pdf_text.split('\n\n')
-    limited_text = '\n\n'.join(pages[:3]) if len(pages) > 3 else pdf_text
+    # Save any user statement as a fact
+    cursor.execute(
+        "INSERT INTO user_facts (user_id, pdf_id, fact) VALUES (?, ?, ?)",
+        (user_id, pdf_id, request.question)
+    )
+    conn.commit()
+    # Retrieve all facts for context
+    cursor.execute(
+        "SELECT fact FROM user_facts WHERE user_id=? AND pdf_id=?",
+        (user_id, pdf_id)
+    )
+    facts = [row[0] for row in cursor.fetchall()]
+    conn.close()
+    # Semantic search for relevant chunks
+    relevant_chunks = query_pdf_chunks(pdf_id, request.question, top_k=3)
+    context = "\n\n".join(relevant_chunks)
+    # Add facts to context
+    if facts:
+        context = "User Facts:\n" + "\n".join(facts) + "\n\n" + context
     llm = LocalLLM()
-    prompt = f"PDF Content:\n{limited_text}\n\nQuestion: {request.question}\nAnswer:"
+    prompt = f"{context}\n\nQuestion: {request.question}\nAnswer:"
     answer = llm.ask(prompt)
+    conn = get_db()
+    cursor = conn.cursor()
     cursor.execute(
         "INSERT INTO chats (user_id, pdf_id, question, answer) VALUES (?, ?, ?, ?)",
-        (user_id, request.pdf_id, request.question, answer)
+        (user_id, pdf_id, request.question, answer)
     )
     conn.commit()
     conn.close()

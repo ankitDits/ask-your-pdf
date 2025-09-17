@@ -1,16 +1,28 @@
+
+
 # PDF Chatbot Monorepo
 
-This monorepo contains a fullstack application for chatting with PDFs using a local LLM.
-
-## Structure
-- `/backend`: Python API, PDF upload, chat, authentication
-- `/frontend`: Next.js app, PDF upload, chat interface, authentication
+This monorepo contains a fullstack PDF chatbot application with:
+- Modern Next.js frontend (React, TypeScript)
+- FastAPI backend (Python)
+- Local LLM integration (Ollama/Mistral)
+- SQLite database
+- Chroma vector database for semantic search
 
 ## Features
+- User registration, login, and JWT authentication
 - PDF upload and text extraction
-- Chat with local LLM about PDF content
-- User authentication (JWT)
-- Chat history
+- PDF text is split into chunks, embedded (sentence-transformers), and stored in Chroma vector DB
+- Chat with local LLM about PDF content using semantic search (retrieves only relevant chunks)
+- User memory: chatbot remembers user-provided facts/statements for each PDF
+- Chat history per user and PDF
+- Beautiful, production-grade UI
+- Secure: users only see their own PDFs and chats
+- Logout functionality
+
+## Project Structure
+- `/backend`: FastAPI app, database, PDF/LLM/vector logic
+- `/frontend`: Next.js app, authentication, chat UI
 
 ## Setup
 
@@ -22,7 +34,11 @@ This monorepo contains a fullstack application for chatting with PDFs using a lo
    .\venv\Scripts\activate
    pip install -r requirements.txt
    ```
-2. Download a compatible Llama model and update the path in `llm.py`.
+2. Start Ollama and pull the Mistral model:
+   ```powershell
+   ollama pull mistral
+   ollama serve
+   ```
 3. Run the FastAPI server:
    ```powershell
    uvicorn main:app --reload
@@ -40,10 +56,12 @@ This monorepo contains a fullstack application for chatting with PDFs using a lo
    ```
 
 ## Usage
-- Register and login via the frontend.
-- Upload PDFs and chat about their content.
-- All data is stored locally in SQLite.
+1. Register and login via the frontend.
+2. Upload PDFs and chat about their content.
+3. View chat history for each PDF.
+4. Logout securely when done.
 
 ## Notes
-- Update the LLM model path in `backend/llm.py` as needed.
+- Update the LLM model endpoint in `backend/llm.py` if needed.
 - For production, change the JWT secret key and use secure deployment practices.
+- All data is stored locally in SQLite, Chroma vector DB, and `uploaded_pdfs/`.

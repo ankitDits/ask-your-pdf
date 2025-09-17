@@ -39,6 +39,16 @@ def init_db():
             FOREIGN KEY(pdf_id) REFERENCES pdfs(id)
         )
     ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS user_facts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            pdf_id INTEGER,
+            fact TEXT NOT NULL,
+            FOREIGN KEY(user_id) REFERENCES users(id),
+            FOREIGN KEY(pdf_id) REFERENCES pdfs(id)
+        )
+    ''')
     conn.commit()
     conn.close()
 
