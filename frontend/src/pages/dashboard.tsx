@@ -16,7 +16,7 @@ export default function Dashboard() {
 
   async function fetchPDFs(token: string | null, user_id: string | null) {
     if (!token || !user_id) return;
-    const res = await fetch(`http://localhost:8000/pdfs?user_id=${user_id}`, {
+    const res = await fetch(`https://01355a92bff5.ngrok-free.app/pdfs?user_id=${user_id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
@@ -32,7 +32,7 @@ export default function Dashboard() {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("user_id", user_id || "");
-    const res = await fetch("http://localhost:8000/upload_pdf", {
+    const res = await fetch("https://01355a92bff5.ngrok-free.app/upload_pdf", {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
       body: formData,

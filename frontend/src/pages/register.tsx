@@ -12,7 +12,7 @@ export default function Register() {
     e.preventDefault();
     setError("");
     setSuccess("");
-    const res = await fetch("http://localhost:8000/register", {
+    const res = await fetch("https://01355a92bff5.ngrok-free.app/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
