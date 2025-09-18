@@ -91,6 +91,7 @@ def login(user: UserLogin):
 
 @app.get("/pdfs")
 def list_pdfs(user_id: int):
+    print(user_id)
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute("SELECT id, filename FROM pdfs WHERE user_id=?", (user_id,))

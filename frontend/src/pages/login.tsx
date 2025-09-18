@@ -10,9 +10,9 @@ export default function Login() {
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    const res = await fetch("https://01355a92bff5.ngrok-free.app/login", {
+    const res = await fetch("https://687c699d555b.ngrok-free.app/login", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "ngrok-skip-browser-warning": "true" },
       body: JSON.stringify({ username, password }),
     });
     const data = await res.json();

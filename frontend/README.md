@@ -34,6 +34,6 @@ Modern Next.js (React, TypeScript) UI for PDF chatbot.
 4. Logout securely when done
 
 ## Notes
-- Connects to FastAPI backend at `https://01355a92bff5.ngrok-free.app`
+- Connects to FastAPI backend at `https://687c699d555b.ngrok-free.app`
 - Requires backend and Ollama server running
 - Update API URLs in `src/api/` if backend port changes
