@@ -19,7 +19,7 @@ export default function Chat() {
 
   async function fetchHistory(token: string | null, user_id: string | null) {
     if (!token || !user_id || !pdf_id) return;
-    const res = await fetch(`https://687c699d555b.ngrok-free.app/chats?user_id=${user_id}&pdf_id=${pdf_id}`, {
+    const res = await fetch(`https://2fd48d0ebd69.ngrok-free.app/chats?user_id=${user_id}&pdf_id=${pdf_id}`, {
       headers: { Authorization: `Bearer ${token}`, "ngrok-skip-browser-warning": "true" },
     });
     const data = await res.json();
@@ -33,7 +33,7 @@ export default function Chat() {
     const token = localStorage.getItem("token");
     const user_id = localStorage.getItem("user_id");
     try {
-      const res = await fetch("https://687c699d555b.ngrok-free.app/chat", {
+      const res = await fetch("https://2fd48d0ebd69.ngrok-free.app/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
