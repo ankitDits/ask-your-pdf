@@ -4,7 +4,7 @@ import requests
 OLLAMA_URL = "http://localhost:11434/api/generate"
 
 class LocalLLM:
-    def __init__(self, model="mistral"):
+    def __init__(self, model="mistral"): # type: ignore
         self.model = model
 
     def ask(self, prompt: str) -> str:
