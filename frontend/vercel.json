@@ -1,9 +1,10 @@
 {
-	"version": 2,
-	"builds": [
-		{ "src": "next.config.js", "use": "@vercel/next" }
-	],
-	"env": {
-		"NEXT_PUBLIC_API_URL": " https://687c699d555b.ngrok-free.app"
-	}
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "outputDirectory": ".next",
+  "rewrites": [
+    { "source": "/", "destination": "/login" }
+  ]
 }
+
