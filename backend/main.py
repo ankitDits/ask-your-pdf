@@ -122,6 +122,7 @@ def list_pdfs(user_id: int):
 @app.post("/chat")
 def chat(request: ChatRequest):
     try:
+        print('abcd')
         user_id = request.user_id
         pdf_id = request.pdf_id
         conn = get_db()

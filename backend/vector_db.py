@@ -3,13 +3,14 @@ import chromadb # type: ignore
 import google.generativeai as genai # type: ignore
 
 CHROMA_DIR = "chroma_db"
-COLLECTION_NAME = "pdf_chunks"
 EMBED_MODEL = "models/text-embedding-004"
+# Use a model-scoped collection name to avoid embedding dimension conflicts with old data
+COLLECTION_NAME = f"pdf_chunks_{EMBED_MODEL.replace('-', '_').replace('/', '_')}"
 
 client = chromadb.PersistentClient(path=CHROMA_DIR) # type: ignore
 
 # Configure Gemini embeddings
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyB9QwMIYWyqZfwyOWRBKqJQbn-YgBhmtQo")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyAMKu5tC0OXxgRlOhjJUOFsTYkmsv1d5YM")
 if not GEMINI_API_KEY:
     raise RuntimeError("GEMINI_API_KEY not set for embeddings.")
 genai.configure(api_key=GEMINI_API_KEY)

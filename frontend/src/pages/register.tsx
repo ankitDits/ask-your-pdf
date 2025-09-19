@@ -12,7 +12,7 @@ export default function Register() {
     e.preventDefault();
     setError("");
     setSuccess("");
-    const res = await fetch("https://ask-your-pdf-lslp.onrender.com/register", {
+    const res = await fetch("http://localhost:8000/register", {
       method: "POST",
       headers: { "Content-Type": "application/json", "ngrok-skip-browser-warning": "true" },
       body: JSON.stringify({ username, password }),
