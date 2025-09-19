@@ -6,4 +6,4 @@ PyPDF2
 python-jose
 requests
 chromadb
-sentence-transformers
+google-generativeai
