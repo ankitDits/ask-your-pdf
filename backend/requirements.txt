@@ -4,9 +4,6 @@ pydantic
 python-multipart
 PyPDF2
 python-jose
-llama-cpp-python
 requests
 chromadb
 sentence-transformers
-openai
-google-generativeai
