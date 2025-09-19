@@ -5,7 +5,7 @@ import hashlib
 import os
 from PyPDF2 import PdfReader
 from models import init_db, get_db
-from llm import LocalLLM
+from llm import ask
 from cors_middleware import add_cors # type: ignore
 from vector_db import add_pdf_chunks, query_pdf_chunks
 
@@ -65,6 +65,7 @@ def upload_pdf(user_id: int = Form(...), file: UploadFile = File(...)): # type: 
 @app.post("/register")
 def register(user: UserCreate):
     conn = get_db()
+    print('abc')
     cursor = conn.cursor()
     hashed_pw = hashlib.sha256(user.password.encode()).hexdigest()
     try:
@@ -129,9 +130,8 @@ def chat(request: ChatRequest):
     # Add facts to context
     if facts:
         context = "User Facts:\n" + "\n".join(facts) + "\n\n" + context
-    llm = LocalLLM()
     prompt = f"{context}\n\nQuestion: {request.question}\nAnswer:"
-    answer = llm.ask(prompt)
+    answer = ask(system_prompt="You are a helpful assistant.", user_prompt=prompt)
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute(

@@ -8,3 +8,5 @@ llama-cpp-python
 requests
 chromadb
 sentence-transformers
+openai
+google-generativeai

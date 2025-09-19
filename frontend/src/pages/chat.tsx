@@ -19,7 +19,7 @@ export default function Chat() {
 
   async function fetchHistory(token: string | null, user_id: string | null) {
     if (!token || !user_id || !pdf_id) return;
-    const res = await fetch(`https://2fd48d0ebd69.ngrok-free.app/chats?user_id=${user_id}&pdf_id=${pdf_id}`, {
+    const res = await fetch(`http://localhost:8000/chats?user_id=${user_id}&pdf_id=${pdf_id}`, {
       headers: { Authorization: `Bearer ${token}`, "ngrok-skip-browser-warning": "true" },
     });
     const data = await res.json();
@@ -33,7 +33,7 @@ export default function Chat() {
     const token = localStorage.getItem("token");
     const user_id = localStorage.getItem("user_id");
     try {
-      const res = await fetch("https://2fd48d0ebd69.ngrok-free.app/chat", {
+      const res = await fetch("http://localhost:8000/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -44,7 +44,9 @@ export default function Chat() {
       });
       const data = await res.json();
       if (res.ok) {
-        setAnswer(data.answer);
+        // Clear input and refresh history; rely on history to show latest answer
+        setQuestion("");
+        setAnswer("");
         fetchHistory(token, user_id);
       } else {
         setAnswer(data.detail || "Error");
@@ -81,14 +83,7 @@ export default function Chat() {
           <div className="loader-dot"></div>
         </div>
       )}
-      {answer && !loading && (
-        <div className="chat-bubble chat-bubble-answer">
-          <div className="chat-avatar chat-avatar-bot">🤖</div>
-          <div className="chat-bubble-content">
-            <ReactMarkdown>{answer}</ReactMarkdown>
-          </div>
-        </div>
-      )}
+      {/* Show only history; avoid duplicate rendering of the latest answer */}
       <h3 className="chat-history-title">Chat History</h3>
       <div className="chat-history-list">
         {history.map((chat, i) => (
