@@ -9,10 +9,10 @@ EMBED_MODEL = "models/text-embedding-004"
 client = chromadb.PersistentClient(path=CHROMA_DIR) # type: ignore
 
 # Configure Gemini embeddings
-_GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
-if not _GOOGLE_API_KEY:
-    raise RuntimeError("GOOGLE_API_KEY (or GEMINI_API_KEY) not set for embeddings.")
-genai.configure(api_key=_GOOGLE_API_KEY)
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyB9QwMIYWyqZfwyOWRBKqJQbn-YgBhmtQo")
+if not GEMINI_API_KEY:
+    raise RuntimeError("GEMINI_API_KEY not set for embeddings.")
+genai.configure(api_key=GEMINI_API_KEY)
 
 def _embed_text(text: str):
     resp = genai.embed_content(model=EMBED_MODEL, content=text)
