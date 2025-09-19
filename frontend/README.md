@@ -34,6 +34,6 @@ Modern Next.js (React, TypeScript) UI for PDF chatbot.
 4. Logout securely when done
 
 ## Notes
-- Connects to FastAPI backend at `http://localhost:8000`
+- Connects to FastAPI backend at `https://ask-your-pdf-lslp.onrender.com`
 - Requires backend and Ollama server running
 - Update API URLs in `src/api/` if backend port changes
