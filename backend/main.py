@@ -48,6 +48,10 @@ def read_root():
 def upload_pdf(user_id: int = Form(...), file: UploadFile = File(...)): # type: ignore
     if not file.filename or not file.filename.endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are allowed.")
+    file_size = len(file.file.read())  # Read the file to determine its size
+    file.file.seek(0)  # Reset the file pointer after reading
+    if file_size > 5 * 1024 * 1024:  # Check if file size exceeds 5 MB
+        raise HTTPException(status_code=400, detail="File size exceeds the 5 MB limit.")
     try:
         file_path = os.path.join(UPLOAD_DIR, file.filename)
         with open(file_path, "wb") as f:
@@ -121,8 +125,8 @@ def list_pdfs(user_id: int):
 
 @app.post("/chat")
 def chat(request: ChatRequest):
+    conn = None  # Ensure conn is always defined
     try:
-        print('abcd')
         user_id = request.user_id
         pdf_id = request.pdf_id
         conn = get_db()
@@ -168,6 +172,9 @@ def chat(request: ChatRequest):
     except Exception as e:
         logger.exception("Chat failed: %s", e)
         raise HTTPException(status_code=500, detail="Chat failed due to an internal error.")
+    finally:
+        if conn:
+            conn.close()
 
 @app.get("/chats")
 def get_chats(user_id: int, pdf_id: int):
