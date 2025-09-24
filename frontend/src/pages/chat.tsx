@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import ReactMarkdown from "react-markdown";
 
@@ -10,6 +10,7 @@ export default function Chat() {
   const [history, setHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
+  const chatHistoryRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -17,6 +18,12 @@ export default function Chat() {
     if (!token || !user_id) router.push("/login");
     fetchHistory(token, user_id);
   }, [pdf_id]);
+
+  useEffect(() => {
+    if (chatHistoryRef.current) {
+      chatHistoryRef.current.scrollTop = chatHistoryRef.current.scrollHeight;
+    }
+  }, [history]);
 
   async function fetchHistory(token: string | null, user_id: string | null) {
     if (!token || !user_id || !pdf_id) return;
@@ -62,9 +69,27 @@ export default function Chat() {
   }
 
   return (
-    <div className="container chat-container">
-      <h2 className="chat-title">PDF Chatbot</h2>
-      <form className="chat-form" onSubmit={handleAsk}>
+    <div className="container chat-container" style={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden" }}>
+      <div className="chat-history-list" ref={chatHistoryRef} style={{ overflowY: "auto", flexGrow: 1, display: "flex", flexDirection: "column-reverse" }}>
+        {[...history].map((chat, i) => (
+          <div key={i} className="chat-history-item">
+            <div className="chat-bubble chat-bubble-user">
+              <div className="chat-avatar chat-avatar-user">🧑</div>
+              <div className="chat-bubble-content">
+                <span className="chat-question"><b>Q:</b> {chat.question}</span>
+              </div>
+            </div>
+            <div className="chat-bubble chat-bubble-answer">
+              <div className="chat-avatar chat-avatar-bot">🤖</div>
+              <div className="chat-bubble-content">
+                <span className="chat-answer"><b>A:</b> <ReactMarkdown>{chat.answer}</ReactMarkdown></span>
+              </div>
+            </div>
+            <small className="chat-timestamp">{chat.timestamp}</small>
+          </div>
+        ))}
+      </div>
+      <form className="chat-form" onSubmit={handleAsk} style={{ marginTop: "auto" }}>
         <div className="chat-input-row">
           <input
             type="text"
@@ -87,32 +112,11 @@ export default function Chat() {
           <div className="loader-dot"></div>
         </div>
       )}
-      {/* Show only history; avoid duplicate rendering of the latest answer */}
       {error && !loading && (
         <div className="chat-error" style={{ color: '#b91c1c', background: '#fee2e2', border: '1px solid #fecaca', padding: 12, borderRadius: 8, marginTop: 12 }}>
           {error}
         </div>
       )}
-      <h3 className="chat-history-title">Chat History</h3>
-      <div className="chat-history-list">
-        {history.map((chat, i) => (
-          <div key={i} className="chat-history-item">
-            <div className="chat-bubble chat-bubble-user">
-              <div className="chat-avatar chat-avatar-user">🧑</div>
-              <div className="chat-bubble-content">
-                <span className="chat-question"><b>Q:</b> {chat.question}</span>
-              </div>
-            </div>
-            <div className="chat-bubble chat-bubble-answer">
-              <div className="chat-avatar chat-avatar-bot">🤖</div>
-              <div className="chat-bubble-content">
-                <span className="chat-answer"><b>A:</b> <ReactMarkdown>{chat.answer}</ReactMarkdown></span>
-              </div>
-            </div>
-            <small className="chat-timestamp">{chat.timestamp}</small>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }
